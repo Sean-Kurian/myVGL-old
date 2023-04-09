@@ -3,10 +3,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import generic
 from django.views.generic.list import ListView
+from django.db.models import Avg
 
 from catalog.models import Game
 # Create your views here.
-from .models import Genre, Game
 
 def index(request):
     """View function for home page of site."""
@@ -46,3 +46,6 @@ class GameListView(ListView):
 
         context['games'] = games
         return context
+    
+    def get_queryset(self):
+        return Game.objects.order_by('title')

@@ -1,8 +1,10 @@
 {% extends 'base_generic.html' %}
+
 {% block head_scripts %}
     {% load static %}
     <script src="{% static 'assets/scripts.js' %}"></script>
 {% endblock %}
+
 {% block content %}
     <h1>All Games</h1>
     <style>
@@ -15,28 +17,44 @@
             <th onclick="sortTable(0)">Title<i class="fa fa-filter"></i></th>
             <th onclick="sortTable(1)">Release Date<i class="fa fa-filter"></i></th>
             <th onclick="sortTable(2)">Summary<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(3)">Publisher<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(4)">Developer<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(5)">Platform<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(6)">Genre<i class="fa fa-filter"></i></th>
+            <th onclick="sortTable(3)">Publishers<i class="fa fa-filter"></i></th>
+            <th onclick="sortTable(4)">Developers<i class="fa fa-filter"></i></th>
+            <th onclick="sortTable(5)">Platforms<i class="fa fa-filter"></i></th>
+            <th onclick="sortTable(6)">Genres<i class="fa fa-filter"></i></th>
+            <th onclick="sortTable(7)">Average Rating<i class="fa fa-filter"></i></th>
         </tr>
         {% for game in games %}
             <tr>
                 <td>{{ game.title }}</td>
                 <td>{{ game.release_date }}</td>
                 <td>{{ game.summary }}</td>
-                <td>{{ game.publisher }}</td>
-                <td>{{ game.developer }}</td>
+                <td>
+                    {% for publisher in game.publishers.all %}
+                        {{ publisher.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    {% for developer in game.developers.all %}
+                        {{ developer.name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </td>
                 <td>
                     {% for platform in game.platforms.all %}
-                      {{ platform.name }}{% if not forloop.last %},{% endif %}
+                        {{ platform.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
                 </td>     
                 <td>
                     {% for genre in game.genres.all %}
-                      {{ genre.name }}{% if not forloop.last %}, {% endif %}
+                        {{ genre.name }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
-                  </td>
+                </td>
+                <td>
+                    {% if game.average_rating %}
+                        {{ game.average_rating|floatformat:2}}
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
             </tr>
         {% endfor %}
     </table>
@@ -56,5 +74,5 @@
                 <a href="?page={{ games.paginator.num_pages }}">last &raquo;</a>
             {% endif %}
         </span>
-      </div>
+    </div>
 {% endblock %}
