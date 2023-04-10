@@ -1,4 +1,16 @@
 from django.db import models
+from django.utils.text import slugify
+
+def create_slug(instance, new_slug=None):
+    slug = slugify(instance.title)
+    if new_slug is not None:
+        slug = new_slug
+    qs = Game.objects.filter(slug=slug).order_by("-id")
+    exists = qs.exists()
+    if exists:
+        new_slug = f"{slug}-{qs.first().id}"
+        return create_slug(instance, new_slug=new_slug)
+    return slug
 
 class Publisher(models.Model):
     name = models.CharField(max_length=255)
@@ -27,6 +39,7 @@ class Game(models.Model):
     developers = models.ManyToManyField(Developer)
     platforms = models.ManyToManyField(Platform)
     genres = models.ManyToManyField(Genre)
+    slug = models.SlugField(unique=True, blank=True, max_length = 255)
 
     @property
     def average_rating(self):
@@ -35,6 +48,11 @@ class Game(models.Model):
             return round(ratings.aggregate(models.Avg('score'))['score__avg'], 2)
         else:
             return None
+        
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = create_slug(self)
+        super(Game, self).save(*args, **kwargs)
 
 class Rating(models.Model):
     game = models.ForeignKey(Game, on_delete=models.CASCADE)
