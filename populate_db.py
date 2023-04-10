@@ -15,7 +15,7 @@ from catalog.models import Game, Platform, Genre, Publisher, Developer
 # Set up the IGDB API endpoint and parameters
 url = "https://api.igdb.com/v4/games"
 #fields = "name, rating, first_release_date, summary, genres.name, platforms.name, involved_companies.company.name;"
-fields = "name, rating, first_release_date, summary, genres.name, platforms.name, involved_companies.company.name"
+fields = "name, rating, first_release_date, summary, genres.name, platforms.name, involved_companies.company.name, involved_companies.developer, involved_companies.publisher"
 #fields = "name, rating, involved_companies.company.name"
 order = "rating desc"
 where = "rating > 0"
@@ -49,8 +49,8 @@ with transaction.atomic():
 
         if game:
             # If the game already exists, update its fields
-            game.release_date = datetime.fromtimestamp(game_data.get("first_release_date")).date()
-            game.summary = game_data.get("summary")
+            game.release_date = datetime.fromtimestamp(game_data.get("first_release_date")).date() if game.release_date else None
+            game.summary = game_data.get("summary") if game.summary else "N/A"
             game.save()
         else:
             # If the game does not exist, create a new game object
@@ -72,11 +72,9 @@ with transaction.atomic():
         for company_data in game_data.get("involved_companies", []):
             company_name = company_data.get("company", {}).get("name")
             if company_data.get("developer", False):
-                print('i hit here too')
                 developer, created = Developer.objects.get_or_create(name=company_name)
                 game.developers.add(developer)
             elif company_data.get("publisher", False):
-                print('i hit here three')
                 publisher, created = Publisher.objects.get_or_create(name=company_name)
                 game.publishers.add(publisher)
 
