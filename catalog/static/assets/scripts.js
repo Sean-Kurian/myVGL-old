@@ -1,50 +1,74 @@
-function quicksort(arr, left, right, column) {
-    var pivot, partitionIndex;
-
-    if (left < right) {
-        pivot = right;
-        partitionIndex = partition(arr, pivot, left, right, column);
-
-        quicksort(arr, left, partitionIndex - 1, column);
-        quicksort(arr, partitionIndex + 1, right, column);
-    }
-    return arr;
-}
-
-function partition(arr, pivot, left, right, column) {
-    var pivotValue = arr[pivot][column],
-        partitionIndex = left;
-
-    for (var i = left; i < right; i++) {
-        if (arr[i][column] < pivotValue) {
-            swap(arr, i, partitionIndex);
-            partitionIndex++;
-        }
-    }
-    swap(arr, right, partitionIndex);
-    return partitionIndex;
-}
-
-function swap(arr, i, j) {
-    var temp = arr[i];
-    arr[i] = arr[j];
-    arr[j] = temp;
-}
-function sortTable(n) {
+function sortTable(n, dataType) {
     var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById("games-table");
     switching = true;
+    // Set the sorting direction to ascending:
     dir = "asc";
+    /* Make a loop that will continue until
+    no switching has been done: */
     while (switching) {
+        // Start by saying: no switching is done:
         switching = false;
         rows = table.rows;
-        var games = [];
+        /* Loop through all table rows (except the
+        first, which contains table headers): */
         for (i = 1; i < (rows.length - 1); i++) {
-            games.push(rows[i]);
+            // Start by saying there should be no switching:
+            shouldSwitch = false;
+            /* Get the two elements you want to compare,
+            one from current row and one from the next: */
+            if (dataType === 'date') {
+                x = new Date(rows[i].getElementsByTagName("td")[n].innerHTML);
+                y = new Date(rows[i + 1].getElementsByTagName("td")[n].innerHTML);
+                if (isNaN(x.getTime()) || isNaN(y.getTime())) {
+                    continue;
+                }
+            } else {
+                x = rows[i].getElementsByTagName("td")[n];
+                y = rows[i + 1].getElementsByTagName("td")[n];
+            }
+            /* Check if the two rows should switch place,
+            based on the direction, asc or desc: */
+            if (dir == "asc") {
+                if (dataType === 'date') {
+                    if (x.getTime() > y.getTime()) {
+                        shouldSwitch= true;
+                        break;
+                    }
+                } else {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch= true;
+                        break;
+                    }
+                }
+            } else if (dir == "desc") {
+                if (dataType === 'date') {
+                    if (x.getTime() < y.getTime()) {
+                        shouldSwitch= true;
+                        break;
+                    }
+                } else {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch= true;
+                        break;
+                    }
+                }
+            }
         }
-        games = quicksort(games, 0, games.length - 1, n);
-        for (i = 0; i < games.length; i++) {
-            table.appendChild(games[i]);
+        if (shouldSwitch) {
+            /* If a switch has been marked, make the switch
+            and mark that a switch has been done: */
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            // Each time a switch is done, increase this count by 1:
+            switchcount ++;
+        } else {
+            /* If no switching has been done AND the direction is "asc",
+            set the direction to "desc" and run the while loop again. */
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
         }
     }
 }

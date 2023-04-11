@@ -14,14 +14,14 @@
       </style>
     <table id="games-table">
         <tr>
-            <th onclick="sortTable(0)">Title<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(1)">Release Date<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(2)">Summary<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(3)">Publishers<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(4)">Developers<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(5)">Platforms<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(6)">Genres<i class="fa fa-filter"></i></th>
-            <th onclick="sortTable(7)">Average Rating<i class="fa fa-filter"></i></th>
+            <th onclick="sortTable(0,'text')">Title<i class="fa fa-filter"></i></th>
+            <th>Release Date</th>
+            <th>Summary</th>
+            <th onclick="sortTable(3, 'text')">Publishers<i class="fa fa-filter"></i></th>
+            <th onclick="sortTable(4, 'text')">Developers<i class="fa fa-filter"></i></th>
+            <th>Platforms</th>
+            <th>Genres</th>
+            <th>Average Rating</th>
         </tr>
         {% for game in games %}
             <tr>
