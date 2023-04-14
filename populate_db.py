@@ -10,19 +10,17 @@ environ.Env.read_env()
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "myvideogamelist.settings")
 django.setup()
 
-from catalog.models import Game, Platform, Genre, Publisher, Developer
+from catalog.models import Game, Platform, Genre, Publisher, Developer, Thumbnail
 
 # Set up the IGDB API endpoint and parameters
 url = "https://api.igdb.com/v4/games"
-#fields = "name, rating, first_release_date, summary, genres.name, platforms.name, involved_companies.company.name;"
-fields = "name, rating, first_release_date, summary, genres.name, platforms.name, involved_companies.company.name, involved_companies.developer, involved_companies.publisher"
-#fields = "name, rating, involved_companies.company.name"
+fields = "name, rating, first_release_date, summary, genres.name, platforms.name, involved_companies.company.name, involved_companies.developer, involved_companies.publisher, cover.url"
 order = "rating desc"
 where = "rating > 0"
 limit = 200
 headers = {}
 
-#Go here to get client_id and client_secret: https://dev.twitch.tv/console/apps/tl9nb7ec86byonfmy24qy0txfpkp0o
+# Go here to get client_id and client_secret: https://dev.twitch.tv/console/apps/tl9nb7ec86byonfmy24qy0txfpkp0o
 # Get the access token
 auth_url = "https://id.twitch.tv/oauth2/token"
 client_id = env("CLIENT_ID")
@@ -66,9 +64,15 @@ with transaction.atomic():
                 summary=game_data.get("summary")
             )
             game.save()
+        
+        # Create or update the thumbnail object for the game
+        cover_data = game_data.get("cover", {})
+        cover_url = cover_data.get("url")
+        if cover_url:
+            print('cover_url', cover_url)
+            thumbnail, created = Thumbnail.objects.get_or_create(game=game, image=cover_url)
 
         # Create the developer and publisher objects 
-        #DOESNT CURRENTLY DO ANYTHING, CHECKING IF WAY TO SORT INVOLVED_COMPANIES
         for company_data in game_data.get("involved_companies", []):
             company_name = company_data.get("company", {}).get("name")
             if company_data.get("developer", False):
