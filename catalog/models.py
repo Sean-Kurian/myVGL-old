@@ -67,3 +67,7 @@ class Comment(models.Model):
 class Follow(models.Model):
     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
     followee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followers', null=True)
+
+class Thumbnail(models.Model):
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='thumbnails')
+    image = models.ImageField(upload_to='thumbnails')
