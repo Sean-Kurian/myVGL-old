@@ -34,13 +34,11 @@ if response.status_code == 200:
         "Client-ID": client_id,
         "Authorization": f"Bearer {access_token}",
     }
-
 # Make the API request
 response2 = requests.post(url, headers=headers, data=f"fields {fields}; sort {order}; limit {limit}; where {where};")
 
 # Parse the response and create objects for each game and platform
 with transaction.atomic():
-
     for game_data in response2.json():
     # Check if the game already exists
         game = Game.objects.filter(title=game_data["name"]).first()
@@ -64,8 +62,7 @@ with transaction.atomic():
                 release_date=release_date,
                 summary=game_data.get("summary")
             )
-            game.save()
-                
+            game.save()        
         # Create or update the thumbnail object for the game
         cover_data = game_data.get("cover", {})
         cover_url = cover_data.get("url")
