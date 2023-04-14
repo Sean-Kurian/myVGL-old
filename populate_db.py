@@ -47,24 +47,25 @@ with transaction.atomic():
 
         if game:
             # If the game already exists, update its fields
-            game.release_date = datetime.fromtimestamp(game_data.get("first_release_date")).date() if game.release_date else None
+            release_date = game_data.get("first_release_date")
+            game.release_date = datetime.fromtimestamp(release_date).strftime("%Y-%m-%d") if release_date else None
             game.summary = game_data.get("summary") if game.summary else "N/A"
             game.save()
         else:
             # If the game does not exist, create a new game object
             first_release_date = game_data.get("first_release_date")
             if first_release_date:
-                date = datetime.fromtimestamp(first_release_date).date()
+                release_date = datetime.fromtimestamp(first_release_date).strftime("%Y-%m-%d")
             else:
-                date = None
+                release_date = None
 
             game = Game(
                 title=game_data["name"],
-                release_date=date,
+                release_date=release_date,
                 summary=game_data.get("summary")
             )
             game.save()
-        
+                
         # Create or update the thumbnail object for the game
         cover_data = game_data.get("cover", {})
         cover_url = cover_data.get("url")
