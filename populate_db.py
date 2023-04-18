@@ -20,7 +20,7 @@ where = "rating > 0"
 limit = 200
 headers = {}
 
-# Go here to get client_id and client_secret: https://dev.twitch.tv/console/apps/tl9nb7ec86byonfmy24qy0txfpkp0o
+# Go here to get client_id and client_secret: https://dev.twitch.tv/login
 # Get the access token
 auth_url = "https://id.twitch.tv/oauth2/token"
 client_id = env("CLIENT_ID")
